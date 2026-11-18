@@ -1,0 +1,69 @@
+# build
+build/
+target/
+node_modules/
+dist-out/
+.vite/
+coverage/
+# local env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# sandboxes
+.sbx/
+# agent scratch — never committed (ADR-0016 § 4)
+docs/plans/
+docs/superpowers/
+.plans/
+PLAN.md
+!scripts/agents/prompts/plan.md
+HANDOFF*.md
+NOTES*.md
+.claude/settings.local.json
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+# Java / Maven (backend/)
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+# Node / pnpm / TypeScript
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-store/
+.eslintcache
+*.tsbuildinfo
+# build output of pnpm workspace members (root dist/ is source: varco CLI)
+frontend/dist/
+keycloak-theme/dist/
+keycloak-theme/dist_keycloak/
+packages/*/dist/
+website/.vitepress/cache/
+website/.vitepress/dist/
+storybook-static/
+*storybook.log
+vite.config.*.timestamp-*
+# Playwright / Lighthouse (visual baselines in *-snapshots/ stay committed)
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.auth/
+.lighthouseci/
+# more key/cert formats (Keycloak/TLS)
+*.p12
+*.pfx
+*.jks
+*.keystore
+# local-only overrides
+compose.override.yaml
+CLAUDE.local.md

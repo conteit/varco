@@ -1,0 +1,18 @@
+name: Bug
+description: Something does not match SPEC/DESIGN or a test/manual script failed.
+labels: ["bug"]
+body:
+  - type: input
+    id: ref
+    attributes: { label: Requirement / script, description: "AC-xx, BR-xx or MT-xx" }
+  - type: textarea
+    id: repro
+    attributes: { label: Steps to reproduce }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected vs actual }
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Version / commit SHA }

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Installed by `make bootstrap` (git config core.hooksPath .githooks). ADR-0016 §2.
+if grep -Eiq '(co-authored-by:.*(claude|anthropic|copilot|openai|gpt|gemini|cursor|codex))|noreply@anthropic\.com|generated (with|by) \[?(claude|ai)' "$1"; then
+  echo "commit-msg: AI co-authorship/attribution is forbidden (ADR-0016)." >&2
+  exit 1
+fi

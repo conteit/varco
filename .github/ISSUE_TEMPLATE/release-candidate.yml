@@ -1,0 +1,16 @@
+name: Release candidate
+description: Baptise the current main head as a release after manual tests (ADR-0016 § 7).
+title: "[rc] vX.Y.Z"
+labels: ["rc:testing"]
+body:
+  - type: markdown
+    attributes:
+      value: "The RC workflow records the main SHA, attaches images/dist for it and posts the manual test checklist. Tick every step; apply `rc:passed` yourself when done."
+  - type: input
+    id: version
+    attributes: { label: Version (from the release-please PR) }
+    validations: { required: true }
+  - type: textarea
+    id: env
+    attributes: { label: Test environment, description: "Mac/OS, Docker version, phones and OS/browser versions, LDAP used" }
+    validations: { required: true }

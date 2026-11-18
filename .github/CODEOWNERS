@@ -1,0 +1,19 @@
+# Owner-gated paths (ADR-0016 § 5): changes here wait for the owner's approval.
+# Replace @OWNER with your GitHub username.
+/.github/                         @OWNER
+/.claude/                         @OWNER
+/.githooks/                       @OWNER
+/AGENTS.md                        @OWNER
+/Makefile                         @OWNER
+/scripts/                         @OWNER
+/dist/                            @OWNER
+**/Dockerfile                     @OWNER
+/compose*.yaml                    @OWNER
+/docker-bake.hcl                  @OWNER
+/infra/edge/                      @OWNER
+/backend/src/main/java/dev/varco/shared/security/ @OWNER
+/api/openapi.yaml                 @OWNER
+/docs/adr/                        @OWNER
+/docs/SPEC.md                     @OWNER
+/LICENSE                          @OWNER
+/NOTICE                           @OWNER
