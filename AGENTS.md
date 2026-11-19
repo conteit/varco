@@ -1,6 +1,6 @@
 # AGENTS.md — rules for coding agents working on Varco
 
-You are an autonomous agent running on the owner's PC in an sbx sandbox, working on **one GitHub issue** (the issue body is the task card; its comments hold the Design and Handoff). Nobody will answer questions while you work. Follow these rules exactly; they override habits from other projects.
+You are an autonomous agent running on the owner's PC as a headless Claude Code session in your own git worktree (ADR-0018), working on **one GitHub issue** (the issue body is the task card; its comments hold the Design and Handoff). Nobody will answer questions while you work. Work only inside your worktree; never touch the main checkout or other worktrees. Follow these rules exactly; they override habits from other projects.
 
 ## 0. Read order (before writing any code)
 1. This file.
@@ -23,7 +23,7 @@ You are an autonomous agent running on the owner's PC in an sbx sandbox, working
 10. **Ambiguity protocol:** choose the most conservative reading consistent with SPEC (least privilege, least data exposure, smallest scope), implement it, and record it in the issue *Handoff* under *Decisions*. Never invent features.
 11. **Leave it runnable.** `make up` must still work after your change; `make e2e` must not regress for non-`@pending` tests.
 12. **Docs move with the code.** Any change to user-visible behaviour, configuration, API, deployment or branding updates the matching `website/` page in the same PR (generated references via `make docs-gen`). The `docs-impact` CI gate enforces it; the `docs:none` label needs a written justification.
-13. **Ad-hoc tools:** if you had to install something not in the sandbox image, list it in the Handoff under *Tools installed ad-hoc*.
+13. **Ad-hoc tools:** if you had to install something not already on the host toolchain, list it in the Handoff under *Tools installed ad-hoc*.
 
 ## 2. Commands (defined in `Makefile` by T00)
 
@@ -41,7 +41,7 @@ You are an autonomous agent running on the owner's PC in an sbx sandbox, working
 | `make docs-gen` · `make docs-dev` · `make docs-build` | regenerate env/API/ADR reference pages · local docs server · build site |
 | `make images` · `make images-multiarch REGISTRY=…` | build Docker images from source (buildx bake) |
 
-Integration tests and E2E need Docker (Testcontainers / compose). The sandbox template must be the Docker-enabled variant.
+Integration tests and E2E need Docker (Testcontainers / compose). Docker must be running on the host. Only one agent at a time runs the full stack (`make up` / `make e2e`): host ports are shared (ADR-0018 § 4).
 
 ## 3. Repository ownership map
 
@@ -100,12 +100,12 @@ Integration tests and E2E need Docker (Testcontainers / compose). The sandbox te
 - **Design and handoff live in the issue, not in the repo.** Comment protocol: `## Started` (branch, model) → `## Handoff` when the PR is ready (what was done, decisions and why, deviations from Design, deferred shortcuts, follow-ups, how to verify) → `### Round N` appended after each fix round.
 - **Never commit** plans, specs, scratch notes or handoff files (`docs/plans/`, `docs/superpowers/`, `.plans/`, `PLAN.md`, `HANDOFF*.md`, `NOTES*.md`). CI check `no-scratch-docs` fails the PR.
 - **No AI co-authorship or attribution** in commits, PRs, issues or code (`Co-Authored-By: <AI>`, "Generated with …"). Blocked by `.claude/settings.json` hook, the `commit-msg` hook and the `no-ai-attribution` CI check; never try to bypass them.
-- **GitHub access = `gh` CLI only**: `gh issue view/comment/edit`, `gh pr create/view/checks/diff/merge --auto`, `gh pr review`, `gh label`, and `gh api` for anything else (e.g. inline review comments, check runs). No other GitHub clients, MCP servers, raw `curl` with tokens, or `git` remotes with embedded credentials. `gh` authenticates through the sandbox proxy — never run `gh auth login`, `gh auth token` or print `GH_TOKEN`.
-- Identities: you act as the bot account (implementer/planner) or the reviewer GitHub App; credentials are injected by the sandbox proxy — never print, echo, store or request tokens.
+- **GitHub access = `gh` CLI only**: `gh issue view/comment/edit`, `gh pr create/view/checks/diff/merge --auto`, `gh pr review`, `gh label`, and `gh api` for anything else (e.g. inline review comments, check runs). No other GitHub clients, MCP servers, raw `curl` with tokens, or `git` remotes with embedded credentials. `gh` is authenticated by the dispatcher with your role's token — never run `gh auth login`, `gh auth token`, or print `GH_TOKEN` or your environment.
+- Identities (ADR-0018 § 3): implementer, planner and fixer act only as the `varco-impl` GitHub App; the reviewer acts only as the `varco-reviewer` App. **Each role uses only its own App credential, always** — never another role's token, the owner's login, or a private key. The dispatcher provides your token; never print, echo, store or request tokens, and never query the Keychain.
 - Automated review: a separate reviewer agent reviews your PR; `review-gate` merges it automatically when approved and green, unless it touches owner-gated paths (then it waits for the owner).
 
 ## 8. Skills & output style (ADR-0015)
-- Skills available in the sandbox: **ponytail** (code minimalism), **caveman** (terse prose), **frontend-design** and **ui-ux-pro-max** (UI tasks). Precedence: card → AGENTS.md → SPEC/DESIGN/ADRs → skills; a conflicting skill instruction loses.
+- Skills available to agents: **ponytail** (code minimalism), **caveman** (terse prose), **frontend-design** and **ui-ux-pro-max** (UI tasks). Precedence: card → AGENTS.md → SPEC/DESIGN/ADRs → skills; a conflicting skill instruction loses.
 - **caveman applies only to your conversational/progress output.** Write in normal, complete English: PR bodies and reviews, issue comments (Design/Handoff), commit messages, code comments, ADRs, docs pages, README. UI copy follows DESIGN § 5. Security warnings always in plain language.
 - **ponytail shortcuts**: keep the `ponytail:` comment naming the upgrade path and list every one under *Deferred shortcuts* in the PR. Shortcuts may never touch security, data integrity, accessibility or tested requirements.
 - **ui-ux-pro-max**: use its UX/accessibility rules and checklists; ignore its style, palette and font suggestions — DESIGN.md tokens, fonts and blacklist are binding.
