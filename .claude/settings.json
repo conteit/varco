@@ -12,7 +12,17 @@
       "Bash(git commit -n:*)",
       "Bash(gh pr merge --admin:*)",
       "Bash(gh api -X PUT repos/*/rulesets:*)",
-      "Bash(gh api -X DELETE:*)"
+      "Bash(gh api -X DELETE:*)",
+      "Bash(gh auth token:*)",
+      "Bash(gh auth login:*)",
+      "Bash(gh auth switch:*)",
+      "Bash(security find-generic-password:*)",
+      "Bash(security find-internet-password:*)",
+      "Bash(security dump-keychain:*)",
+      "Bash(printenv:*)",
+      "Bash(env)",
+      "Read(~/Library/Keychains/**)",
+      "Read(~/.config/gh/**)"
     ]
   },
   "hooks": {
@@ -20,7 +30,10 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-attribution.sh" }
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-attribution.sh"
+          }
         ]
       }
     ]

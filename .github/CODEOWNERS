@@ -5,6 +5,7 @@
 /.githooks/                       @conteit
 /AGENTS.md                        @conteit
 /Makefile                         @conteit
+/mise.toml                        @conteit
 /scripts/                         @conteit
 /dist/                            @conteit
 **/Dockerfile                     @conteit
