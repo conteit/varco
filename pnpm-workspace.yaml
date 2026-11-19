@@ -1,0 +1,5 @@
+packages:
+  - frontend
+  - packages/*
+  - keycloak-theme
+  - e2e
