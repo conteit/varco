@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Commit hygiene
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hygiene-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HEAD_REF: ${{ github.head_ref }}
+  PR_TITLE: ${{ github.event.pull_request.title }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          case "$HEAD_REF" in release-please--*|dependabot/*) exit 0 ;; esac
+          if ! [[ "$HEAD_REF" =~ ^(feat|fix|docs|chore|ci|test|refactor)/[A-Za-z0-9]+-[a-z0-9-]+$ ]]; then
+            echo "Branch '$HEAD_REF' must match <feat|fix|docs|chore|ci|test|refactor>/<TASK-ID>-<slug>" >&2
+            exit 1
+          fi
+
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
+      - run: pnpm install --frozen-lockfile
+      - name: PR title
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+      - name: PR commits
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA"
+
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: |
+          case "$HEAD_REF" in release-please--*|dependabot/*) exit 0 ;; esac
+          status=0
+          for sha in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+            if ! git show -s --format=%B "$sha" | grep -qE '^Signed-off-by: .+ <.+>$'; then
+              echo "Commit $sha is missing a Signed-off-by line (use git commit -s)" >&2
+              status=1
+            fi
+          done
+          exit $status

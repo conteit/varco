@@ -1,0 +1,11 @@
+backend/
+build/
+node_modules/
+pnpm-lock.yaml
+docs/
+tests/
+website/
+*.md
+.claude/
+.github/ISSUE_TEMPLATE/
+CHANGELOG.md
