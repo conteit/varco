@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+name: PR body lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-body-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PR_BODY: ${{ github.event.pull_request.body }}
+  PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+
+jobs:
+  pr-body-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Summary, Tests and exactly one issue reference
+        run: |
+          [ "$PR_AUTHOR" = "dependabot[bot]" ] && exit 0
+          printf '%s\n' "$PR_BODY" | scripts/agents/guards.sh pr-body

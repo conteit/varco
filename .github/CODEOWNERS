@@ -1,5 +1,4 @@
 # Owner-gated paths (ADR-0016 § 5): changes here wait for the owner's approval.
-# Replace @conteit with your GitHub username.
 /.github/                         @conteit
 /.claude/                         @conteit
 /.githooks/                       @conteit
