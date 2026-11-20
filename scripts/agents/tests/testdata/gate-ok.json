@@ -1,0 +1,19 @@
+{
+  "pr": {
+    "head": {"sha": "abc123"},
+    "body": "## Summary\n- x\n\n## Tests\n- y\n\nCloses #7",
+    "user": {"login": "varco-impl[bot]", "type": "Bot"},
+    "labels": []
+  },
+  "reviews": [
+    {"user": {"login": "varco-reviewer[bot]", "type": "Bot"}, "state": "APPROVED", "commit_id": "abc123", "submitted_at": "2026-01-02T10:00:00Z"}
+  ],
+  "files": [{"filename": "scripts/a.sh", "additions": 100, "deletions": 20}],
+  "checks": [
+    {"name": "backend", "result": "success"},
+    {"name": "frontend", "result": "success"},
+    {"name": "review-gate", "result": "failure"}
+  ],
+  "events": [],
+  "issue": {"number": 7, "state": "open"}
+}
