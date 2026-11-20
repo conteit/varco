@@ -2,6 +2,9 @@
 # Single entry point (AGENTS.md § 2). Targets for parts that do not exist yet print "not yet available".
 PNPM ?= pnpm
 MVN_ARGS ?=
+ifneq ($(HTTPS_PROXY),)
+MVN_ARGS += -gs '$(shell scripts/agents/maven-proxy.sh)'
+endif
 MVNW := ./mvnw -B $(MVN_ARGS)
 
 .DEFAULT_GOAL := help
@@ -34,6 +37,11 @@ lint-scripts:
 	scripts/agents/tests/guards.test.sh
 	scripts/agents/tests/review-gate.test.sh
 	scripts/agents/tests/unblock.test.sh
+	scripts/agents/tests/app-token.test.sh
+	scripts/agents/tests/stack-lock.test.sh
+	scripts/agents/tests/maven-proxy.test.sh
+	scripts/agents/tests/select.test.sh
+	scripts/agents/tests/dispatch.test.sh
 
 test-backend:
 	cd backend && $(MVNW) verify
@@ -44,8 +52,16 @@ test-frontend:
 test-brand:
 	$(PNPM) --filter @varco/brand run test
 
-test-theme up down reset api-types e2e storybook storybook-test screenshots docs-gen docs-dev docs-build images images-multiarch:
+test-theme api-types storybook storybook-test screenshots docs-gen docs-dev docs-build images images-multiarch:
 	@echo "$@: not yet available"
+
+up e2e:
+	scripts/agents/stack-lock.sh acquire
+	@echo "$@: not yet available"
+
+down reset:
+	@echo "$@: not yet available"
+	scripts/agents/stack-lock.sh release
 
 trace:
 	scripts/trace.sh $(if $(STRICT),--strict)
