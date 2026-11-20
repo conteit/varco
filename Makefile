@@ -32,6 +32,8 @@ lint-scripts:
 	shellcheck scripts/*.sh scripts/agents/*.sh scripts/agents/tests/*.sh .githooks/*
 	scripts/trace.test.sh
 	scripts/agents/tests/guards.test.sh
+	scripts/agents/tests/review-gate.test.sh
+	scripts/agents/tests/unblock.test.sh
 
 test-backend:
 	cd backend && $(MVNW) verify

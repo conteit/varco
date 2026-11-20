@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: Apache-2.0
+# Post-merge human review queue (ADR-0016), and the disagreement fast path. No PR code is checked out.
+name: Human review
+
+on:
+  pull_request_target:
+    types: [closed]
+  issues:
+    types: [labeled]
+  schedule:
+    - cron: "0 7 * * 1"
+
+permissions: {}
+
+concurrency:
+  group: human-review-queue
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  REPO: ${{ github.repository }}
+
+jobs:
+  merged:
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    env:
+      PR: ${{ github.event.pull_request.number }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Label and append to this week's queue comment
+        run: |
+          gh pr edit "$PR" --repo "$REPO" --add-label human-review:pending
+          queue="$(gh issue list --repo "$REPO" --search 'in:title "Human review queue"' --state open --json number --jq '.[0].number // empty')"
+          [ -n "$queue" ] || { echo "No 'Human review queue' issue; skipping queue entry."; exit 0; }
+          week="$(date -u +%G-W%V)"
+          title="${PR_TITLE//[$'\n\r']/ }"; title="${title//@/}"
+          line="- #$PR $title"
+          marker="<!-- week:$week -->"
+          id="$(gh api --paginate "repos/$REPO/issues/$queue/comments" \
+            --jq "[.[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"$marker\")))][0].id // empty")"
+          if [ -n "$id" ]; then
+            body="$(gh api "repos/$REPO/issues/comments/$id" --jq .body)"
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body"$'\n'"$line" >/dev/null
+          else
+            gh issue comment "$queue" --repo "$REPO" --body "$marker"$'\n'"**Week $week**"$'\n'"$line"
+          fi
+
+  disagreement:
+    if: >-
+      github.event_name == 'issues' && github.event.label.name == 'disagreement'
+      && github.event.issue.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - run: gh issue edit "${{ github.event.issue.number }}" --repo "$REPO" --add-label agent-ready --add-label model:sonnet
+
+  digest:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      issues: write
+    steps:
+      - run: |
+          queue="$(gh issue list --repo "$REPO" --search 'in:title "Human review queue"' --state open --json number --jq '.[0].number // empty')"
+          [ -n "$queue" ] || exit 0
+          list="$(gh pr list --repo "$REPO" --state merged --label human-review:pending --json number,title --jq '.[] | "- #\(.number)"')"
+          [ -n "$list" ] || exit 0
+          gh issue comment "$queue" --repo "$REPO" --body "**Weekly digest: merged PRs still awaiting human review**"$'\n'"$list"

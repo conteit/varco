@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# When an issue closes as completed, label `agent-ready` on issues whose `Depends on:` are now all closed.
+name: Unblock dependents
+
+on:
+  issues:
+    types: [closed]
+
+permissions: {}
+
+concurrency:
+  group: unblock
+  cancel-in-progress: false
+
+jobs:
+  unblock:
+    if: github.event.issue.state_reason == 'completed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      CLOSED: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: scripts/agents
+      - run: |
+          issues="$(gh api --paginate --slurp "repos/$REPO/issues?state=open&per_page=100" | jq -c 'add // []')"
+          for n in $(jq -n -r -L scripts/agents/lib --argjson closed "$CLOSED" --argjson issues "$issues" \
+              'include "dispatch"; {closed: $closed, issues: $issues} | unblocked[]'); do
+            gh issue edit "$n" --repo "$REPO" --add-label agent-ready
+          done
