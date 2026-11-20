@@ -1,0 +1,2 @@
+# Fake token in an earlier commit of the A1 dispatcher test (test data, not a secret); the file now builds it at runtime.
+8613980ea1dcd50df27cbbbd781ebbb565eeae29:scripts/agents/tests/dispatch.test.sh:generic-api-key:44
