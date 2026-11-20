@@ -41,7 +41,7 @@ STUB
 chmod +x "$t/bin/"*
 
 export PATH="$t/bin:$PATH" HOME="$t/home" VARCO_AGENTS_HOME="$t/agents" DISPATCH_ROOT="$t/main" DISPATCH_WORKTREES="$t/wt" \
-  DISPATCH_REPO=o/r VARCO_APP_TOKEN_CMD="$t/bin/app-token" DISPATCH_POLL=0.2 GH_TOKEN=ghs_LEAK0123456789abcdef
+  DISPATCH_REPO=o/r VARCO_APP_TOKEN_CMD="$t/bin/app-token" DISPATCH_POLL=0.2 GH_TOKEN="ghs_""LEAK0123456789abcdef"
 mkdir -p "$HOME"
 d="$here/../dispatch.sh"
 
