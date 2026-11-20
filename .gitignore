@@ -67,3 +67,6 @@ playwright/.cache/
 # local-only overrides
 compose.override.yaml
 CLAUDE.local.md
+
+# agent tooling scratch
+.planning/

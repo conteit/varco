@@ -29,8 +29,9 @@ check: lint-scripts
 	gitleaks git --no-banner --redact
 
 lint-scripts:
-	shellcheck scripts/*.sh .githooks/*
+	shellcheck scripts/*.sh scripts/agents/*.sh scripts/agents/tests/*.sh .githooks/*
 	scripts/trace.test.sh
+	scripts/agents/tests/guards.test.sh
 
 test-backend:
 	cd backend && $(MVNW) verify

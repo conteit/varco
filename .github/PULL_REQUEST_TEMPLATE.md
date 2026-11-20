@@ -9,4 +9,4 @@
 ## Notes
 <!-- Only if non-empty: files outside scope, new dependencies, deferred `ponytail:` shortcuts, contract change request. Otherwise delete this section. -->
 
-Closes #
+Closes #<n>  <!-- exactly one; use "Part of #<n>" on lower layers of a stack -->

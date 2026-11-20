@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+name: No scratch docs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: no-scratch-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  no-scratch-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Changed files
+        run: git diff --name-only --diff-filter=AMR "$BASE_SHA...$HEAD_SHA" | scripts/agents/guards.sh scratch-docs

@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+name: No AI attribution
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: no-ai-attribution-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PR_TITLE: ${{ github.event.pull_request.title }}
+  PR_BODY: ${{ github.event.pull_request.body }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  no-ai-attribution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Commit messages, PR title and body
+        run: |
+          { git log --format=%B "$BASE_SHA..$HEAD_SHA"; printf '%s\n%s\n' "$PR_TITLE" "$PR_BODY"; } \
+            | scripts/agents/guards.sh attribution
