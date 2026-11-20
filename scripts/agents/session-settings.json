@@ -1,0 +1,75 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": ["Bash", "Edit(/**)"],
+    "deny": [
+      "Read(@AGENTS@/**)",
+      "Read(@HOME@/Library/Keychains/**)",
+      "Read(@HOME@/.config/gh/**)",
+      "Read(@HOME@/.config/varco-agents/**)",
+      "Read(@HOME@/.ssh/**)",
+      "Read(@HOME@/.aws/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "@AGENTS@/hooks/block-attribution.sh" }]
+      }
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": true,
+    "enableWeakerNetworkIsolation": true,
+    "filesystem": {
+      "allowWrite": [
+        "@WORKTREE@",
+        "@GITDIR@",
+        "@TMP_A@",
+        "@TMP_B@",
+        "@HOME@/.m2",
+        "@HOME@/.npm",
+        "@HOME@/.cache",
+        "@HOME@/Library/Caches/pnpm",
+        "@HOME@/Library/pnpm",
+        "@HOME@/Library/Caches/ms-playwright",
+        "@HOME@/.testcontainers.properties",
+        "/tmp/pnpm-store-operation-locks-@UID@",
+        "/private/tmp/pnpm-store-operation-locks-@UID@",
+        "@VOLUME@/.pnpm-store",
+        "@AGENTS@/stack-lock",
+        "@SESSION@/gh"
+      ],
+      "denyWrite": ["@GITDIR@/hooks", "@GITDIR@/config"],
+      "denyRead": [
+        "@AGENTS@",
+        "@HOME@/Library/Keychains",
+        "@HOME@/.config/gh",
+        "@HOME@/.config/varco-agents",
+        "@HOME@/.ssh",
+        "@HOME@/.aws"
+      ],
+      "allowRead": ["@SESSION@/gh"]
+    },
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "raw.githubusercontent.com",
+        "registry.npmjs.org",
+        "repo.maven.apache.org",
+        "repo1.maven.org",
+        "start.spring.io",
+        "cdn.playwright.dev",
+        "playwright.download.prss.microsoft.com"
+      ],
+      "allowUnixSockets": ["@HOME@/.docker/run/docker.sock", "/var/run/docker.sock"]
+    }
+  }
+}
