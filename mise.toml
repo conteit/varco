@@ -1,4 +1,4 @@
-# Toolchain for the host, agent worktrees and CI (ADR-0018 § 4).
+# Toolchain for the host, agent sandboxes and CI (ADR-0019 § 5).
 # `mise install` (run by `make bootstrap` and the dispatcher) installs exactly these versions.
 [tools]
 java = "temurin-25.0.5+8.0.LTS"

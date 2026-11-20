@@ -1,6 +1,6 @@
 # ADR-0018 — Agent runtime: host Claude Code sessions in git worktrees (replaces sbx)
 
-**Status:** Accepted · **Date:** 2026-11-18 · **Amends:** ADR-0016 § 1 (runtime, identities, secret handling), ADR-0015 ("sandbox kit")
+**Status:** Superseded by ADR-0019 except § 3 (identities), which stays in force · **Date:** 2026-11-18 · **Amends:** ADR-0016 § 1 (runtime, identities, secret handling), ADR-0015 ("sandbox kit")
 
 ## Context
 ADR-0016 ran every agent in its own sbx microVM, with GitHub credentials injected by the sbx host proxy. On the owner's Mac, sbx stores its VM disks on the internal drive and cannot be relocated to the external drive where the project lives; a wave of sandboxes fills the system disk. The owner decided not to use sbx for this project.

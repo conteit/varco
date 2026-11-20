@@ -1,5 +1,5 @@
 You are implementing issue #{{ISSUE}} of the Varco repository, unattended, on the owner's PC. Nobody will answer questions.
-0. Use the `gh` CLI for all GitHub interaction (issues, comments, PRs, labels, checks); it is already authenticated as the `varco-impl` GitHub App by the dispatcher; use no other credential. Work only inside your worktree (current directory).
+0. Use the `gh` CLI for all GitHub interaction (issues, comments, PRs, labels, checks); the sandbox proxy already authenticates it as the `varco-impl` GitHub App; use no other credential. Work only inside your sandbox clone (current directory).
 1. Read AGENTS.md fully, then `gh issue view {{ISSUE}} --comments` (the issue body is the task card; a "## Design" comment, if present, is the agreed approach). Follow AGENTS.md § 0 read order.
 2. Comment on the issue: "## Started" with your branch name and model.
 3. Work on branch `{{BRANCH}}` only. Never commit to main. Test-first: requirement tests named with AC/BR IDs + integration tests (AGENTS.md rule 3). Smallest complete change (ponytail); stay inside owned paths.
