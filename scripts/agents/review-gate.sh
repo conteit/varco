@@ -12,7 +12,7 @@ while [ $# -gt 0 ]; do
     *) echo "usage: review-gate.sh --owner <login> --budget <lines> < state.json" >&2; exit 2 ;;
   esac
 done
-[[ "$budget" =~ ^[0-9]+$ ]] && [ -n "$owner" ] || { echo "review-gate: --owner and numeric --budget are required" >&2; exit 2; }
+{ [[ "$budget" =~ ^[0-9]+$ ]] && [ -n "$owner" ]; } || { echo "review-gate: --owner and numeric --budget are required" >&2; exit 2; }
 
 state="$(cat)"
 printf '%s' "$state" | jq -e '.pr.head.sha and (.reviews | type == "array") and (.files | type == "array") and (.checks | type == "array") and (.events | type == "array")' >/dev/null 2>&1 \

@@ -55,14 +55,14 @@ grep -q 'DRY-RUN: start planner (opus, effort high) for #4' <<<"$out" || fail "d
 
 # --- cap -----------------------------------------------------------------------------------------------
 out="$(DISPATCH_MAX=0 "$d" run 2>&1)"
-grep -q 'cap of 0' <<<"$out" && [ ! -e "$t/wt" ] || fail "[A1] cap reached must not start sessions: $out"
+{ grep -q 'cap of 0' <<<"$out" && [ ! -e "$t/wt" ]; } || fail "[A1] cap reached must not start sessions: $out"
 
 # --- real run ----------------------------------------------------------------------------------------------
 out="$("$d" run 2>&1)"
 sess="$t/agents/sessions/A1"
 for _ in $(seq 1 100); do [ "$(jq -r '.ended // empty' "$sess/session.json" 2>/dev/null)" ] && break; sleep 0.2; done
 [ -n "$(jq -r '.ended // empty' "$sess/session.json")" ] || fail "session did not finish"
-[ "$(jq -r .exit "$sess/session.json")" = 0 ] && [ "$(jq -r .session_id "$sess/session.json")" = sess-1 ] || fail "session.json lacks exit/session_id"
+{ [ "$(jq -r .exit "$sess/session.json")" = 0 ] && [ "$(jq -r .session_id "$sess/session.json")" = sess-1 ]; } || fail "session.json lacks exit/session_id"
 git -C "$t/main" worktree list | grep -q 'feat/A1-test-card' || fail "worktree/branch not created"
 grep -q 'issue edit 4 --repo o/r --add-label in-progress' "$t/gh.log" || fail "in-progress label not set"
 

@@ -3,6 +3,7 @@
 set -uo pipefail
 lock="$(cd "$(dirname "$0")" && pwd)/../stack-lock.sh"
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
+unset CI # GitHub Actions sets CI=true, which turns the lock into a no-op
 export VARCO_AGENTS_HOME="$t" STACK_LOCK_POLL=1 STACK_LOCK_MAX=2
 failed=0; fail() { echo "FAIL: $*"; failed=1; }
 

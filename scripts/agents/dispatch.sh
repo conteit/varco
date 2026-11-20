@@ -101,7 +101,7 @@ launch() {
   render "$6" > "$dir/prompt.md"
   jq -n --arg name "$1" --arg role "$2" --arg wt "$3" --arg model "$4" --arg effort "$5" --arg started "$(date -u +%FT%TZ)" \
     --argjson extra "$7" '{name: $name, role: $role, worktree: $wt, model: $model, effort: $effort, started: $started} + $extra' > "$dir/session.json"
-  (cd "$3" && command -v mise >/dev/null && { mise trust -q; mise install -q; } >/dev/null 2>&1 || true)
+  if command -v mise >/dev/null; then (cd "$3" && mise trust -q && mise install -q) >/dev/null 2>&1 || true; fi
   /usr/bin/python3 -c 'import os,sys; os.setsid(); os.execv(sys.argv[1], sys.argv[1:])' "$HERE/dispatch.sh" _supervise "$dir" \
     < /dev/null > /dev/null 2>&1 &
 }

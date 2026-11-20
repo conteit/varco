@@ -26,7 +26,7 @@ jwt="$unsigned.$(printf '%s' "$unsigned" | openssl dgst -sha256 -sign <(printf '
 api() { curl -fsS -H @<(printf 'Authorization: Bearer %s\n' "$jwt") -H 'Accept: application/vnd.github+json' "$@"; }
 installation="$(api "https://api.github.com/repos/$repo/installation" | jq -r .id)"
 token="$(api -X POST -d "{\"repositories\":[\"${repo#*/}\"]}" "https://api.github.com/app/installations/$installation/access_tokens" | jq -r .token)"
-[ -n "$token" ] && [ "$token" != null ] || { echo "app-token: no token returned for $role" >&2; exit 1; }
+{ [ -n "$token" ] && [ "$token" != null ]; } || { echo "app-token: no token returned for $role" >&2; exit 1; }
 
 umask 077
 mkdir -p "$dir"
