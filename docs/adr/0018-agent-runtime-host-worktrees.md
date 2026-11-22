@@ -3,7 +3,7 @@
 **Status:** Superseded by ADR-0019 except § 3 (identities), which stays in force · **Date:** 2026-11-18 · **Amends:** ADR-0016 § 1 (runtime, identities, secret handling), ADR-0015 ("sandbox kit")
 
 ## Context
-ADR-0016 ran every agent in its own sbx microVM, with GitHub credentials injected by the sbx host proxy. On the owner's Mac, sbx stores its VM disks on the internal drive and cannot be relocated to the external drive where the project lives; a wave of sandboxes fills the system disk. The owner decided not to use sbx for this project.
+ADR-0016 ran every agent in its own sbx microVM, with GitHub credentials injected by the sbx host proxy. sbx's local storage did not fit the owner's machine setup at the time, so the owner decided not to use sbx for this project.
 
 ## Decision
 1. **Runtime.** Every agent (planner, implementer, reviewer) is a headless Claude Code session (`claude -p … --permission-mode dontAsk --permission-prompts none < /dev/null`, never `--dangerously-skip-permissions`) running on the host, launched by `scripts/agents/dispatch.sh`, with its working directory set to a dedicated **git worktree**: `../varco-worktrees/<TASK-ID>` (sibling of the main checkout, same volume). One task = one worktree = one branch. The reviewer gets a fresh, detached worktree at the PR head SHA, removed after the review. Worktrees are removed when the PR merges or the task is escalated.
@@ -24,6 +24,6 @@ ADR-0016 ran every agent in its own sbx microVM, with GitHub credentials injecte
 5. Wherever earlier ADRs, AGENTS.md or task cards say "sandbox", read "the agent's worktree session".
 
 ## Consequences
-+ No per-agent VM disks on the system drive; worktrees live next to the repo on the external volume. Faster start (no VM boot, shared caches).
++ No per-agent VM disks; worktrees live next to the repository. Faster start (no VM boot, shared caches).
 − Weaker isolation than a microVM: agents run as the owner's OS user, the Claude Code sandbox is bypassable through the Docker socket, and a session can read its own App token. Mitigated by role-scoped short-lived/fine-grained tokens, the command-blocking hook, owner-gated paths and deterministic gates (ADR-0016 § 5).
 − Full-stack E2E is serialised across agents.
