@@ -7,7 +7,7 @@ MVNW := ./mvnw -B $(MVN_ARGS)
 .DEFAULT_GOAL := help
 .PHONY: help bootstrap up down reset check test-backend test-frontend test-brand test-theme api-types \
         e2e trace storybook storybook-test screenshots docs-gen docs-dev docs-build images images-multiarch \
-        lint-scripts
+        lint-scripts sbx-kit
 
 help:
 	@echo "Targets are listed in AGENTS.md § 2."
@@ -29,7 +29,7 @@ check: lint-scripts
 	gitleaks git --no-banner --redact
 
 lint-scripts:
-	shellcheck scripts/*.sh .githooks/*
+	shellcheck scripts/*.sh .githooks/* infra/sbx/*/install.sh
 	scripts/trace.test.sh
 
 test-backend:
@@ -47,3 +47,9 @@ test-theme up down reset api-types e2e storybook storybook-test screenshots docs
 trace:
 	scripts/trace.sh $(if $(STRICT),--strict)
 	@head -12 build/trace.md
+
+# sbx builds a local kit only from its own directory, so the kit gets its own copy of mise.toml (ADR-0019 § 5).
+sbx-kit:
+	rm -rf build/sbx-kit && mkdir -p build/sbx-kit
+	cp -R infra/sbx/varco-toolchain build/sbx-kit/
+	cp mise.toml build/sbx-kit/varco-toolchain/

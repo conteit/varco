@@ -40,6 +40,7 @@ You are an autonomous agent running on the owner's PC as a headless Claude Code 
 | `make screenshots` | Playwright screenshots for README/DESIGN/site |
 | `make docs-gen` · `make docs-dev` · `make docs-build` | regenerate env/API/ADR reference pages · local docs server · build site |
 | `make images` · `make images-multiarch REGISTRY=…` | build Docker images from source (buildx bake) |
+| `make sbx-kit` | assemble the agent sandbox toolchain kit (`infra/sbx/varco-toolchain` + `mise.toml`) into `build/sbx-kit/` (ADR-0019 § 5) |
 
 Integration tests and E2E need Docker (Testcontainers / compose). Docker must be running on the host. Only one agent at a time runs the full stack (`make up` / `make e2e`): host ports are shared (ADR-0018 § 4).
 
