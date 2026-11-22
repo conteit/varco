@@ -4,6 +4,9 @@
 set -eu
 
 proxy_ca=/usr/local/share/ca-certificates/proxy-ca.crt
+
+# Register the libatomic shipped by this kit with the dynamic loader.
+ldconfig
 export MISE_DATA_DIR=/opt/mise
 # The hook runs as root with the agent's HOME; keep mise's root-owned state out of it.
 export HOME=/root

@@ -10,7 +10,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
+    && apt-get install -y --no-install-recommends ca-certificates curl xz-utils libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN case "$TARGETARCH" in \
@@ -28,8 +28,12 @@ COPY mise.toml /etc/mise/config.toml
 ENV MISE_DATA_DIR=/opt/mise
 RUN mise install && mise reshim && mise exec -- java -version
 
+# Node 26's Linux binaries link libatomic, which the claude kit's image lacks; ship trixie's copy.
+RUN mkdir /out && cp -a --parents /usr/lib/*-linux-gnu/libatomic.so.1* /out/
+
 FROM scratch
 COPY --from=build /usr/local/bin/mise /usr/local/bin/mise
 COPY --from=build /etc/mise /etc/mise
+COPY --from=build /out/ /
 COPY --from=build --chown=1000:1000 /opt/mise /opt/mise
 COPY --chmod=0755 install.sh /usr/local/share/varco/install.sh
