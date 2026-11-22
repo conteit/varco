@@ -2,7 +2,7 @@
 # `mise install` (run by `make bootstrap` and the dispatcher) installs exactly these versions.
 [tools]
 java = "temurin-25.0.5+8.0.LTS"
-node = "22.23.5"
+node = "26.13.1"
 pnpm = "12.21.0"
 gitleaks = "8.30.1"
 shellcheck = "0.11.0"
