@@ -1,6 +1,6 @@
 # ADR-0016 — Autonomous delivery loop: issues, models, automated review & auto-merge, post-merge human review, release baptism
 
-**Status:** Accepted, § 1 runtime, identities and secret handling amended by ADR-0018 · **Date:** 2026-11-18
+**Status:** Accepted, § 1 identities amended by ADR-0018 § 3, runtime and secret handling by ADR-0019 · **Date:** 2026-11-18
 
 ## Context
 The owner wants PRs to proceed and merge **without waiting for him**, with the PR history showing one agent implementing and a different agent reviewing — and **all agents run on his own PC** (sbx sandboxes), security first, no secret leakage. GitHub Actions runs only deterministic CI and gates; while keeping the ability to review everything later and disagree. Work, design discussion and handoffs live in **GitHub issues** — no agent plan/spec scratch files committed. Agents never appear as co-authors. Releases are "baptised" only after manual test scripts pass on a specific `main` commit.

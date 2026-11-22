@@ -1,6 +1,6 @@
 # AGENTS.md — rules for coding agents working on Varco
 
-You are an autonomous agent running on the owner's PC as a headless Claude Code session in your own git worktree (ADR-0018), working on **one GitHub issue** (the issue body is the task card; its comments hold the Design and Handoff). Nobody will answer questions while you work. Work only inside your worktree; never touch the main checkout or other worktrees. Follow these rules exactly; they override habits from other projects.
+You are an autonomous agent running on the owner's PC as a headless Claude Code session in your own Docker sandbox (sbx microVM, ADR-0019), working on **one GitHub issue** (the issue body is the task card; its comments hold the Design and Handoff). Nobody will answer questions while you work. Work only in your sandbox's clone; the host checkout at `/run/sandbox/source` is a read-only clone source, never a place to work. Follow these rules exactly; they override habits from other projects.
 
 ## 0. Read order (before writing any code)
 1. This file.
@@ -41,7 +41,7 @@ You are an autonomous agent running on the owner's PC as a headless Claude Code 
 | `make docs-gen` · `make docs-dev` · `make docs-build` | regenerate env/API/ADR reference pages · local docs server · build site |
 | `make images` · `make images-multiarch REGISTRY=…` | build Docker images from source (buildx bake) |
 
-Integration tests and E2E need Docker (Testcontainers / compose). Docker must be running on the host. Only one agent at a time runs the full stack (`make up` / `make e2e`): host ports are shared (ADR-0018 § 4).
+Integration tests and E2E need Docker (Testcontainers / compose). Your sandbox runs its own Docker daemon, so `make up` / `make e2e` do not collide with other agents (ADR-0019 § 7).
 
 ## 3. Repository ownership map
 
@@ -101,7 +101,7 @@ Integration tests and E2E need Docker (Testcontainers / compose). Docker must be
 - **Never commit** plans, specs, scratch notes or handoff files (`docs/plans/`, `docs/superpowers/`, `.plans/`, `PLAN.md`, `HANDOFF*.md`, `NOTES*.md`). CI check `no-scratch-docs` fails the PR.
 - **No AI co-authorship or attribution** in commits, PRs, issues or code (`Co-Authored-By: <AI>`, "Generated with …"). Blocked by `.claude/settings.json` hook, the `commit-msg` hook and the `no-ai-attribution` CI check; never try to bypass them.
 - **GitHub access = `gh` CLI only**: `gh issue view/comment/edit`, `gh pr create/view/checks/diff/merge --auto`, `gh pr review`, `gh label`, and `gh api` for anything else (e.g. inline review comments, check runs). No other GitHub clients, MCP servers, raw `curl` with tokens, or `git` remotes with embedded credentials. `gh` is authenticated by the dispatcher with your role's token — never run `gh auth login`, `gh auth token`, or print `GH_TOKEN` or your environment.
-- Identities (ADR-0018 § 3): implementer, planner and fixer act only as the `varco-impl` GitHub App; the reviewer acts only as the `varco-reviewer` App. **Each role uses only its own App credential, always** — never another role's token, the owner's login, or a private key. The dispatcher provides your token; never print, echo, store or request tokens, and never query the Keychain.
+- Identities (ADR-0018 § 3, ADR-0019 § 3): implementer, planner and fixer act only as the `varco-impl` GitHub App; the reviewer acts only as the `varco-reviewer` App. **Each role uses only its own App credential, always** — never another role's token, the owner's login, or a private key. The sandbox proxy injects your role's token into GitHub requests; `GH_TOKEN` inside the sandbox is only a placeholder. Never try to print, store or obtain a real token.
 - Automated review: a separate reviewer agent reviews your PR; `review-gate` merges it automatically when approved and green, unless it touches owner-gated paths (then it waits for the owner).
 
 ## 8. Skills & output style (ADR-0015)
